@@ -1,8 +1,8 @@
 from django.conf.urls import url
 
-from portimize.views import HomePageView
+from . import views
 
 urlpatterns = [
-    url(r'^$', HomePageView.as_view(), name='home'),
+    url(r'^$', views.Home.as_view(), name='home'),
 ]
 
