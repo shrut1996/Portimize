@@ -1,25 +1,32 @@
 <html>
+
 <title>
+{% block title %}
 Portimize welcomes you!
-<link rel="icon" 
-      type="image/png" 
-      href="http://example.com/myicon.png">
+{% endblock %}
 </title>
 
 <header>
 <center><h1>Portimize</h1></center>
-<body>
 
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'portimize/style_home.css' %}" />
 
+{% block content %}
 <br><centre>
 <div class="intro">
-<p>Fill in the details below : </p>
+{% if current_user.is_anonymous %}
+    <li><a href="{% url 'GeneralApp:login' %}">Sign In</a></li>
+    <li><a href="{% url 'GeneralApp:register' %}">Sign Up</a></li>
+{% endif %}
+{% if not current_user.is_anonymous %}
+    Hello, {{request.user.username}}
+    <p>Fill in the details below : </p>
+{% endif %}
 </div>
 </centre>
 <br><br>
-</body>
+{% endblock %}
 
 <footer>
 <br>
