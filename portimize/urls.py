@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.Home.as_view(), name='home'),
+    url(r'^results/$', views.results, name='results'),
     url(r'^login/$', auth_views.login, {'template_name': 'portimize/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^signup/$', views.signup, name='signup'),
