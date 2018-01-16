@@ -16,28 +16,29 @@ Portimize welcomes you!
 <br><centre>
 <div class="intro">
 {% if not user.is_authenticated %}
-    <li><a href="{% url 'login' %}">Sign In</a></li>
-    <li><a href="{% url 'signup' %}">Register</a></li>
+    <a href="{% url 'login' %}">Sign In</a>
+    <a href="{% url 'signup' %}">Register</a>
 {% endif %}
 {% if user.is_authenticated %}
-    <li><a href="{% url 'logout' %}">Logout</a></li>
-    Hello, {{request.user.username}}
-    <p>Fill in the details below : </p>
+    <a href="{% url 'logout' %}">Logout</a>
+    <p> Hello, {{ request.user.username }}.
+    Fill in the details below : </p>
     <form action="{% url 'home' %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Optimize</button>
   </form>
+    <p>{{ price }}</p>
 {% endif %}
 </div>
 </centre>
 <br><br>
 {% endblock %}
 
-<footer>
-<br>
-<center><h4>Created by SHRUT PATEL</h4></center>
-</footer>
+<!--<footer>-->
+<!--<br>-->
+<!--<center><h4>Created by SHRUT PATEL</h4></center>-->
+<!--</footer>-->
 
 </html>
 

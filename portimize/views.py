@@ -2,6 +2,9 @@ from django.views import generic
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from forms import SignUpForm, PortfolioForm
+import pandas_datareader.data as web
+import pandas as pd
+
 
 
 
@@ -18,13 +21,26 @@ class Home(generic.TemplateView):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             asset1 = form.cleaned_data['asset1']
-            # port_obj = Portfolio(start_date = start_date, end_date = end_date)
-            # port_obj.save()
-            # return redirect('home')
+            weight1 = form.cleaned_data['weight1']
+            asset2 = form.cleaned_data['asset2']
+            weight2 = form.cleaned_data['weight2']
+            asset3 = form.cleaned_data['asset3']
+            weight3 = form.cleaned_data['weight3']
+            asset4 = form.cleaned_data['asset4']
+            weight4 = form.cleaned_data['weight4']
+            asset5 = form.cleaned_data['asset5']
+            weight5 = form.cleaned_data['weight5']
+
+            price = web.DataReader(asset1, 'yahoo', start_date)
+            price = price['Open'].loc[end_date]
+
         args = {'form': form, 'start_date': start_date,
                 'end_date': end_date, 'asset1' : asset1,
-                'asset2': asset2, 'asset3' : asset3,
-                'asset4': asset4}
+                'weight1' : weight1, 'asset2': asset2,
+                'weight2' : weight2, 'asset3' : asset3,
+                'weight3' : weight3, 'asset4': asset4,
+                'weight4': weight4, 'asset5': asset5,
+                'weight5': weight5, 'price' : price}
         return render(request, 'portimize/home.html', args)
 
 def results(request):
