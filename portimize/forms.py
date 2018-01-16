@@ -13,9 +13,9 @@ class SignUpForm(UserCreationForm):
 
 ASSET_CHOICES = [
     ('^NSEI', 'Nifty 50'),
-    ('cantaloupe', 'Cantaloupes'),
-    ('mango', 'Mangoes'),
-    ('honeydew', 'Honeydews'),
+    ('^GSPC', 'S&P 500'),
+    ('^DJI', 'Dow Jones Industrial Average'),
+    ('^RUT', 'Russell 2000'),
     ]
 
 class PortfolioForm(forms.Form):
@@ -29,5 +29,3 @@ class PortfolioForm(forms.Form):
     weight3 = forms.FloatField(max_value=1, min_value=0)
     asset4 = forms.CharField(label='Asset 4 ', widget=forms.Select(choices=ASSET_CHOICES))
     weight4 = forms.FloatField(max_value=1, min_value=0)
-    asset5 = forms.CharField(label='Asset 4 ', widget=forms.Select(choices=ASSET_CHOICES))
-    weight5 = forms.FloatField(max_value=1, min_value=0)
