@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms.extras.widgets import SelectDateWidget
+import datetime
 
 class SignUpForm(UserCreationForm):
     birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD')
@@ -19,8 +20,8 @@ ASSET_CHOICES = [
     ]
 
 class PortfolioForm(forms.Form):
-    start_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(1980,2030)),)
-    end_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(1980,2030)),)
+    start_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(1990,2030)), initial=datetime.date.today)
+    end_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(1990,2030)), initial=datetime.date.today)
     asset1 = forms.CharField(label='Asset 1 ', widget=forms.Select(choices=ASSET_CHOICES))
     weight1 = forms.FloatField(max_value=1, min_value=0)
     asset2 = forms.CharField(label='Asset 2 ', widget=forms.Select(choices=ASSET_CHOICES))

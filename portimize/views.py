@@ -4,15 +4,14 @@ from django.shortcuts import render, redirect
 from forms import SignUpForm, PortfolioForm
 import pandas_datareader.data as web
 import pandas as pd
-from optimization import *
-
-
+from django.http import HttpResponseRedirect
+from optimization import MarkowitzOptimize
 
 
 class Home(generic.TemplateView):
     template_name = 'portimize/home.html'
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         form = PortfolioForm
         return render(request, self.template_name, {'form' : form})
 
@@ -50,55 +49,27 @@ class Home(generic.TemplateView):
                 .merge(pd.DataFrame(df3), left_index=True, right_index=True) \
                 .merge(pd.DataFrame(df4), left_index=True, right_index=True)
 
-            portfolio_prices.to_csv('imio.csv')
             weights = []
             weights.append(weight1)
             weights.append(weight2)
             weights.append(weight3)
             weights.append(weight4)
 
-            # new_weights = optimize(portfolio_prices, weights)
+            opti_model = MarkowitzOptimize(portfolio_prices, weights)
+            new_weights = opti_model.minimizeSharpeRatio()
 
-            log_ret = np.log(portfolio_prices / portfolio_prices.shift(1))
-            num_ports = 1500
-
-            all_weights = np.zeros((num_ports, len(portfolio_prices.columns)))
-            ret_arr = np.zeros(num_ports)
-            vol_arr = np.zeros(num_ports)
-            sharpe_arr = np.zeros(num_ports)
-
-            for ind in range(num_ports):
-                # Create Random Weights
-                weights = np.array(np.random.random(4))
-
-                # Rebalance Weights
-                weights = weights / np.sum(weights)
-
-                # Save Weights
-                all_weights[ind, :] = weights
-
-                # Expected Return
-                ret_arr[ind] = np.sum((log_ret.mean() * weights) * 252)
-
-                # Expected Variance
-                vol_arr[ind] = np.sqrt(np.dot(weights.T, np.dot(np.asarray(log_ret.cov()) * 252, weights)))
-
-                # Sharpe Ratio
-                sharpe_arr[ind] = ret_arr[ind] / vol_arr[ind]
-
-            new_weights = all_weights[sharpe_arr.argmax(),:]
-
-
-        args = {'form': form, 'start_date': start_date,
+        args = {'form' : form, 'start_date' : start_date,
                 'end_date': end_date, 'asset1' : asset1,
-                'weight1' : weight1, 'asset2': asset2,
-                'weight2' : weight2, 'asset3' : asset3,
-                'weight3' : weight3, 'asset4': asset4,
-                'weight4': weight4, 'new_weights': new_weights}
-        return render(request, 'portimize/home.html', args)
+                'asset2' : asset2, 'asset3' : asset3,
+                'asset4' : asset4, 'new_weights1' : new_weights[0],
+                'new_weights2' : new_weights[1],
+                'new_weights3' : new_weights[2],
+                'new_weights4' : new_weights[3]}
+
+        return render(request, 'portimize/results.html', args)
 
 def results(request):
-    return render(request, 'portimize/home.html')
+    return render(request, 'portimize/results.html')
 
 def signup(request):
     if request.method == 'POST':
