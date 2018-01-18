@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect
 from forms import SignUpForm, PortfolioForm
 import pandas_datareader.data as web
 import pandas as pd
-from django.http import HttpResponseRedirect
 from optimization import MarkowitzOptimize
+from Predictions import *
 
 
 class Home(generic.TemplateView):
@@ -54,6 +54,8 @@ class Home(generic.TemplateView):
             weights.append(weight2)
             weights.append(weight3)
             weights.append(weight4)
+
+            # new_portfolio_prices = lstm(portfolio_prices)
 
             opti_model = MarkowitzOptimize(portfolio_prices, weights)
             new_weights = opti_model.minimizeSharpeRatio()
