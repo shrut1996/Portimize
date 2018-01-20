@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import keras
 
 np.random.seed(1)
-data=pd.read_csv('^NSEI.xslx')
+data=pd.read_csv('imio.csv')
 data.dropna(axis=0, how='any')
 data=data.drop(['Date'],axis=1)
 arr = data.copy()
