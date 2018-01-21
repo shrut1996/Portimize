@@ -1,6 +1,7 @@
 from keras.models import model_from_json
 from keras.models import load_model
 import pandas as pd
+import tensorflow as tf
 import numpy as np
 import sklearn.preprocessing as prep
 
@@ -9,7 +10,9 @@ def lstm(portfolio_prices):
     portfolio_prices = portfolio_prices.astype(float)
     X_train, y_train, X_test, y_test = preprocess_data(portfolio_prices[:: -1], 20)
     loaded_model = load_model('my_model.h5')
-    return loaded_model.predict(X_train)
+    graph = tf.get_default_graph()
+    with graph.as_default():
+        return loaded_model.predict(X_train)
 
 
 def standard_scaler(X_train, X_test):

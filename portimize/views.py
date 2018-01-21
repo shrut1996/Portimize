@@ -69,8 +69,6 @@ class Home(generic.TemplateView):
             weights.append(weight3)
             weights.append(weight4)
 
-            # new_portfolio_prices = lstm(portfolio_prices)
-
             opti_model = MarkowitzOptimize(portfolio_prices, weights)
             new_weights = opti_model.minimizeSharpeRatio()
 
