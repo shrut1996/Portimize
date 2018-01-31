@@ -25,37 +25,37 @@ class Home(generic.TemplateView):
             asset1 = form.cleaned_data['asset1']
             weight1 = form.cleaned_data['weight1']
             prices1 = web.DataReader(asset1, 'yahoo', start_date)
-            df1 = pd.DataFrame({'Close': prices1['Close'], 'Open' : prices1['Open'], 'High' : prices1['High'], 'Low' : prices1['Low']})
-            new_df1 = lstm(df1)
-            new_df1 = pd.DataFrame(new_df1)
+            df1 = pd.DataFrame({'Close': prices1['Close']})
+            # df1 = pd.DataFrame({'Close': prices1['Close'], 'Open' : prices1['Open'], 'High' : prices1['High'], 'Low' : prices1['Low']})
+            # df1 = pd.DataFrame(lstm(df1))
 
             #asset2
             asset2 = form.cleaned_data['asset2']
             weight2 = form.cleaned_data['weight2']
             prices2 = web.DataReader(asset2, 'yahoo', start_date)
-            df2 = pd.DataFrame({'Close': prices2['Close'], 'Open': prices2['Open'], 'High': prices2['High'], 'Low': prices2['Low']})
-            new_df2 = lstm(df2)
-            new_df2 = pd.DataFrame(new_df2)
+            df2 = pd.DataFrame({'Close': prices2['Close']})
+            # df2 = pd.DataFrame({'Close': prices2['Close'], 'Open': prices2['Open'], 'High': prices2['High'], 'Low': prices2['Low']})
+            # df2 = pd.DataFrame(lstm(df2))
 
             #asset3
             asset3 = form.cleaned_data['asset3']
             weight3 = form.cleaned_data['weight3']
             prices3 = web.DataReader(asset3, 'yahoo', start_date)
-            df3 = pd.DataFrame({'Close': prices3['Close'], 'Open': prices3['Open'], 'High': prices3['High'], 'Low': prices3['Low']})
-            new_df3 = lstm(df3)
-            new_df3 = pd.DataFrame(new_df3)
+            df3 = pd.DataFrame({'Close': prices3['Close']})
+            # df3 = pd.DataFrame({'Close': prices3['Close'], 'Open': prices3['Open'], 'High': prices3['High'], 'Low': prices3['Low']})
+            # df3 = pd.DataFrame(lstm(df3))
 
             #asset4
             asset4 = form.cleaned_data['asset4']
             weight4 = form.cleaned_data['weight4']
             prices4 = web.DataReader(asset4, 'yahoo', start_date)
-            df4 = pd.DataFrame({'Close': prices4['Close'], 'Open': prices4['Open'], 'High': prices4['High'], 'Low': prices4['Low']})
-            new_df4 = lstm(df4)
-            new_df4 = pd.DataFrame(new_df4)
+            df4 = pd.DataFrame({'Close': prices4['Close']})
+            # df4 = pd.DataFrame({'Close': prices4['Close'], 'Open': prices4['Open'], 'High': prices4['High'], 'Low': prices4['Low']})
+            # df4 = pd.DataFrame(lstm(df4))
 
-            portfolio_prices = new_df1.merge(pd.DataFrame(new_df2), left_index=True, right_index=True) \
-                .merge(pd.DataFrame(new_df3), left_index=True, right_index=True) \
-                .merge(pd.DataFrame(new_df4), left_index=True, right_index=True)
+            portfolio_prices = df1.merge(pd.DataFrame(df2), left_index=True, right_index=True) \
+                .merge(pd.DataFrame(df3), left_index=True, right_index=True) \
+                .merge(pd.DataFrame(df4), left_index=True, right_index=True)
 
             weights = []
             weights.append(weight1)

@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import keras
 
 np.random.seed(1)
-data=pd.read_csv('imio.csv')
+data = pd.read_csv('a.csv')
 data.dropna(axis=0, how='any')
-data=data.drop(['Date'],axis=1)
+data = data.drop(['Date'],axis=1)
 arr = data.copy()
 arr = arr.dropna(axis=0, how='any')
 train_start=0
@@ -22,19 +22,20 @@ data_train=arr[np.arange(train_start, train_end),:]
 data_test=arr[np.arange(test_start,test_end),:]
 data_train=pd.DataFrame(data_train)
 data_test=pd.DataFrame(data_test)
-for i in range(0,5):
-    data_train=data_train.loc[data_train[i]!='null',:]
-    data_test=data_test.loc[data_test[i]!='null',:]
-data_train=data_train.astype(float)
-data_test=data_test.astype(float)
+# for i in range(0,5):
+#     data_train=data_train.loc[data_train[i]!='null',:]
+#     data_test=data_test.loc[data_test[i]!='null',:]
+# data_train=data_train.astype(float)
+print data_train
+# data_test=data_test.astype(float)
 # scaler=MinMaxScaler()
 # scaler.fit(data_train)
 # data_train=scaler.transform(data_train)
 # data_test=scaler.transform(data_test)
 x_train=data_train.iloc[:,0:4]
-y_train=data_train.iloc[:, 4]
+y_train=data_train.iloc[:, -1]
 x_test=data_test.iloc[:,0:4]
-y_test=data_test.iloc[:, 4]
+y_test=data_test.iloc[:, -1]
 features = 4
 X = tf.placeholder(dtype=tf.float32, shape=[None, features])
 Y = tf.placeholder(dtype=tf.float32, shape=[None])
@@ -95,9 +96,9 @@ for e in range(epochs):
 pred=net.run(out, feed_dict={X:x_test})
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
-line1, =ax1.plot(y_test, linewidth=0.5)
+line1, = ax1.plot(y_test, linewidth=0.5)
 line2, = ax1.plot(pred, linewidth=0.5)
-plt.savefig('nn3.jpeg')
+# plt.savefig('nn3.jpeg')
 #testing on very old 2003 data (out of range)
 a=[ 1699.70 ,1728.00 ,1699.70, 1723.95 ]
 pred2=net.run(out, feed_dict={X:pd.DataFrame(a).T})
