@@ -32,10 +32,10 @@ print data_train
 # scaler.fit(data_train)
 # data_train=scaler.transform(data_train)
 # data_test=scaler.transform(data_test)
-x_train=data_train.iloc[:,0:4]
-y_train=data_train.iloc[:, -1]
-x_test=data_test.iloc[:,0:4]
-y_test=data_test.iloc[:, -1]
+x_train=data_train.iloc[:,1:]
+y_train=data_train.iloc[:, 0]
+x_test=data_test.iloc[:,1:]
+y_test=data_test.iloc[:, 0]
 features = 4
 X = tf.placeholder(dtype=tf.float32, shape=[None, features])
 Y = tf.placeholder(dtype=tf.float32, shape=[None])
@@ -94,6 +94,7 @@ for e in range(epochs):
             # plt.pause(0.01)
 
 pred=net.run(out, feed_dict={X:x_test})
+print pred
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 line1, = ax1.plot(y_test, linewidth=0.5)

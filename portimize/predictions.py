@@ -8,11 +8,11 @@ import sklearn.preprocessing as prep
 def lstm(portfolio_prices):
     portfolio_prices = portfolio_prices.dropna(axis=0, how='any')
     portfolio_prices = portfolio_prices.astype(float)
-    X_train, y_train, X_test, y_test = preprocess_data(portfolio_prices[:: -1], 20)
-    loaded_model = load_model('my_model.h5')
-    graph = tf.get_default_graph()
-    with graph.as_default():
-        return loaded_model.predict(X_train)
+    X_train, y_train, X_test, y_test = preprocess_data(portfolio_prices[:: -1], 22)
+    loaded_model = load_model('model.h5')
+    # graph = tf.get_default_graph()
+    # with graph.as_default():
+    return loaded_model.predict(X_train)
 
 
 def standard_scaler(X_train, X_test):
@@ -42,6 +42,7 @@ def preprocess_data(stock, seq_len):
 
     result = np.array(result)
     row = round(0.9 * result.shape[0])
+    row = result.shape[0]
     train = result[: int(row), :]
 
     train, result = standard_scaler(train, result)
