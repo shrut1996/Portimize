@@ -1,19 +1,32 @@
-from keras.models import model_from_json
 from keras.models import load_model
-import pandas as pd
 import tensorflow as tf
+import keras
 import numpy as np
 import sklearn.preprocessing as prep
 
-def lstm(portfolio_prices):
-    portfolio_prices = portfolio_prices.dropna(axis=0, how='any')
+def predict(portfolio_prices):
+    portfolio_prices.drop(['Volume', 'Close'], 1, inplace=True)
     portfolio_prices = portfolio_prices.astype(float)
+    # portfolio_prices = portfolio_prices.dropna(axis=0, how='any')
+    for i in portfolio_prices.columns:  # df.columns[w:] if you have w column of line description
+        portfolio_prices[i] = portfolio_prices[i].fillna(portfolio_prices[i].median())
+    portfolio_prices = normalize(portfolio_prices)
     X_train, y_train, X_test, y_test = preprocess_data(portfolio_prices[:: -1], 22)
     loaded_model = load_model('model.h5')
-    # graph = tf.get_default_graph()
-    # with graph.as_default():
-    return loaded_model.predict(X_train)
+    adam = keras.optimizers.Adam(decay=0.2)
+    loaded_model.compile(loss='mse',optimizer=adam, metrics=['accuracy'])
+    graph = tf.get_default_graph()
+    with graph.as_default():
+        return loaded_model.predict(X_train)
 
+
+def normalize(prices):
+    min_max_scaler = prep.MinMaxScaler()
+    prices['Open'] = min_max_scaler.fit_transform(prices.Open.values.reshape(-1, 1))
+    prices['High'] = min_max_scaler.fit_transform(prices.High.values.reshape(-1, 1))
+    prices['Low'] = min_max_scaler.fit_transform(prices.Low.values.reshape(-1, 1))
+    prices['Adj Close'] = min_max_scaler.fit_transform(prices['Adj Close'].values.reshape(-1, 1))
+    return prices
 
 def standard_scaler(X_train, X_test):
     train_samples, train_nx, train_ny = X_train.shape
