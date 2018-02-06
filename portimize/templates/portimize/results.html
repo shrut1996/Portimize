@@ -5,10 +5,12 @@
 {% block content %}
 <br><br>
 <div class="intro">
-  <h2>Your optimised portfolio</h2>
+  <h2>Your optimized portfolio</h2>
     <p>{{ asset1 }} : {{ new_weights1 }}</p>
     <p>{{ asset2 }} : {{ new_weights2 }}</p>
     <p>{{ asset3 }} : {{ new_weights3 }}</p>
     <p>{{ asset4 }} : {{ new_weights4 }}</p>
+    {% load static %}
+    <img src="{% static 'portimize\images\fig.jpg' %}"/>
 </div>
 {% endblock %}

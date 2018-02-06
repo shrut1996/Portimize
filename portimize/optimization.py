@@ -8,18 +8,12 @@ class MarkowitzOptimize:
         self.weights = weights
 
     def check_sum(self, weights):
-        '''
-        Returns 0 if sum of weights is 1.0
-        '''
         return np.sum(weights) - 1
 
     def neg_sharpe(self, weights):
         return self.get_ret_vol_sr(weights)[2] * (-1)
 
     def get_ret_vol_sr(self, weights):
-        """
-        Takes in weights, returns array or return,volatility, sharpe ratio
-        """
         log_ret = np.log(self.portfolio_prices / self.portfolio_prices.shift(1))
         weights = np.array(weights)
         ret = np.sum(log_ret.mean() * weights) * 252

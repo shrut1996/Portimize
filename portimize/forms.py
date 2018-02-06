@@ -11,7 +11,6 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ('username', 'birth_date', 'password1', 'password2', )
 
-
 ASSET_CHOICES = [
     ('^NSEI', 'Nifty 50'),
     ('^GSPC', 'S&P 500'),

@@ -6,7 +6,7 @@ import sklearn.preprocessing as prep
 
 def predict(portfolio_prices):
     portfolio_prices.drop(['Volume', 'Close'], 1, inplace=True)
-    portfolio_prices = portfolio_prices.astype(float)
+    portfolio_prices.astype(float)
     # portfolio_prices = portfolio_prices.dropna(axis=0, how='any')
     for i in portfolio_prices.columns:  # df.columns[w:] if you have w column of line description
         portfolio_prices[i] = portfolio_prices[i].fillna(portfolio_prices[i].median())
@@ -15,9 +15,7 @@ def predict(portfolio_prices):
     loaded_model = load_model('model.h5')
     adam = keras.optimizers.Adam(decay=0.2)
     loaded_model.compile(loss='mse',optimizer=adam, metrics=['accuracy'])
-    graph = tf.get_default_graph()
-    with graph.as_default():
-        return loaded_model.predict(X_train)
+    return loaded_model.predict(X_train)
 
 
 def normalize(prices):

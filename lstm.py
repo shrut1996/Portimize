@@ -16,7 +16,7 @@ shape = [4, seq_len, 1] # feature, window, output
 neurons = [128, 128, 32, 1]
 epochs = 40
 
-def load_data(stock, seq_len):
+def preprocess(stock, seq_len):
     amount_of_features = len(stock.columns)
     data = stock.as_matrix()
     sequence_length = seq_len + 1  # index starting from 0
@@ -39,23 +39,6 @@ def load_data(stock, seq_len):
     X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], amount_of_features))
 
     return [X_train, y_train, X_test, y_test]
-
-def build_model2(layers, neurons, d):
-    model = Sequential()
-
-    model.add(LSTM(neurons[0], input_shape=(layers[1], layers[0]), return_sequences=True))
-    model.add(Dropout(d))
-
-    model.add(LSTM(neurons[1], input_shape=(layers[1], layers[0]), return_sequences=False))
-    model.add(Dropout(d))
-
-    model.add(Dense(neurons[2], kernel_initializer="uniform", activation='relu'))
-    model.add(Dense(neurons[3], kernel_initializer="uniform", activation='linear'))
-    # model = load_model('my_LSTM_stock_model1000.h5')
-    # adam = keras.optimizers.Adam(decay=0.2)
-    model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-    model.summary()
-    return model
 
 
 def percentage_difference(model, X_test, y_test):
@@ -96,12 +79,26 @@ def plot_result(stock_name, normalized_value_p, normalized_value_y_test):
     plt2.show()
     return newy_test
 
+
 df = pd.read_csv('../a.csv')
 df.set_index('Date', inplace=True)
-X_train, y_train, X_test, y_test = load_data(df, seq_len)
+X_train, y_train, X_test, y_test = preprocess(df, seq_len)
 
+model = Sequential()
 
-model = build_model2(shape, neurons, d)
+model.add(LSTM(neurons[0], input_shape=(shape[1], shape[0]), return_sequences=True))
+model.add(Dropout(d))
+
+model.add(LSTM(neurons[1], input_shape=(shape[1], shape[0]), return_sequences=False))
+model.add(Dropout(d))
+
+model.add(Dense(neurons[2], kernel_initializer="uniform", activation='relu'))
+model.add(Dense(neurons[3], kernel_initializer="uniform", activation='linear'))
+# model = load_model('my_LSTM_stock_model1000.h5')
+# adam = keras.optimizers.Adam(decay=0.2)
+model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+model.summary()
+
 model.fit(
     X_train,
     y_train,
@@ -120,6 +117,7 @@ print('Test Score: %.5f MSE (%.2f RMSE)' % (testScore[0], math.sqrt(testScore[0]
 print trainScore[0]
 print testScore[0]
 
+new_prices = plot_result('^GSPC', p, y_test)
+print new_prices
 
-new = plot_result('^GSPC', p, y_test)
 model.save('model.h5')

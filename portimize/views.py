@@ -27,7 +27,7 @@ class Home(generic.TemplateView):
             weight1 = form.cleaned_data['weight1']
             prices1 = web.DataReader(asset1, 'yahoo', start_date, end_date)
             df1 = pd.DataFrame(predict(prices1))
-            df1.rename(columns={df1.columns[0]: 'Close'}, inplace = True)
+            df1.rename(columns={df1.columns[0]: 'Close1'}, inplace = True)
             # df1.set_index(p[:84], inplace=True)
 
             #asset2
@@ -35,7 +35,7 @@ class Home(generic.TemplateView):
             weight2 = form.cleaned_data['weight2']
             prices2 = web.DataReader(asset2, 'yahoo', start_date, end_date)
             df2 = pd.DataFrame(predict(prices2))
-            df2.rename(columns={df2.columns[0]: 'Close'}, inplace=True)
+            df2.rename(columns={df2.columns[0]: 'Close2'}, inplace=True)
             # df2.set_index(p[:84], inplace=True)
 
             #asset3
@@ -43,7 +43,7 @@ class Home(generic.TemplateView):
             weight3 = form.cleaned_data['weight3']
             prices3 = web.DataReader(asset3, 'yahoo', start_date, end_date)
             df3 = pd.DataFrame(predict(prices3))
-            df3.rename(columns={df3.columns[0]: 'Close'}, inplace=True)
+            df3.rename(columns={df3.columns[0]: 'Close3'}, inplace=True)
             # df3.set_index(p[:84], inplace=True)
 
             #asset4
@@ -51,7 +51,7 @@ class Home(generic.TemplateView):
             weight4 = form.cleaned_data['weight4']
             prices4 = web.DataReader(asset4, 'yahoo', start_date, end_date)
             df4 = pd.DataFrame(predict(prices4))
-            df4.rename(columns={df4.columns[0]: 'Close'}, inplace=True)
+            df4.rename(columns={df4.columns[0]: 'Close4'}, inplace=True)
             # df2.set_index(p[:84], inplace=True)
             # df4.set_index(p[:84], inplace=True)
 
@@ -67,6 +67,19 @@ class Home(generic.TemplateView):
 
             opti_model = MarkowitzOptimize(portfolio_prices, weights)
             new_weights = opti_model.minimizeSharpeRatio()
+
+            import matplotlib.pyplot as plt2
+
+            portfolio_prices = portfolio_prices / portfolio_prices.iloc[0]
+            attributes = list(portfolio_prices.columns.values)
+
+            return1 = portfolio_prices[attributes].mul(weights).sum(1)
+            return2 = portfolio_prices[attributes].mul(new_weights).sum(1)
+
+            plt2.plot(return1, color='red', label='Previous portfolio')
+            plt2.plot(return2, color='blue', label='Optimized portfolio')
+            plt2.legend(loc='upper left')
+            plt2.savefig('portimize/static/portimize/images/fig.jpg')
 
         args = {'form' : form, 'start_date' : start_date,
                 'end_date': end_date, 'asset1' : asset1,
