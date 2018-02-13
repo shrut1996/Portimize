@@ -5,6 +5,8 @@ import numpy as np
 import sklearn.preprocessing as prep
 
 def predict(portfolio_prices):
+    portfolio_prices = portfolio_prices['Close']
+    return portfolio_prices
     portfolio_prices.drop(['Volume', 'Close'], 1, inplace=True)
     portfolio_prices.astype(float)
     # portfolio_prices = portfolio_prices.dropna(axis=0, how='any')
@@ -15,7 +17,10 @@ def predict(portfolio_prices):
     loaded_model = load_model('model.h5')
     adam = keras.optimizers.Adam(decay=0.2)
     loaded_model.compile(loss='mse',optimizer=adam, metrics=['accuracy'])
-    return loaded_model.predict(X_train)
+    # tf.keras.backend.clear_session()
+    graph = tf.get_default_graph()
+    with graph.as_default():
+        return loaded_model.predict(X_train)
 
 
 def normalize(prices):

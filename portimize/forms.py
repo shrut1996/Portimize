@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.forms.extras.widgets import SelectDateWidget
 import datetime
 
+
 class SignUpForm(UserCreationForm):
     birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD')
 
@@ -12,15 +13,55 @@ class SignUpForm(UserCreationForm):
         fields = ('username', 'birth_date', 'password1', 'password2', )
 
 ASSET_CHOICES = [
-    ('^NSEI', 'Nifty 50'),
-    ('^GSPC', 'S&P 500'),
-    ('^DJI', 'Dow Jones Industrial Average'),
-    ('^RUT', 'Russell 2000'),
+    ('CRISIL.NS', 'Crisil'),
+    ('SUNPHARMA.NS', 'Sun Pharma'),
+    ('GOOGL', 'Alphabet'),
+    ('AAPL', 'Apple'),
+    ('FB', 'Facebook'),
+    ('BABA', 'Alibaba Group'),
+    ('AMZN', 'Amazon.com'),
+    ('MSFT', 'Microsoft'),
+    ('CSCO', 'Cisco'),
+    ('WMT', 'Walmart'),
+    ('ORCL', 'Oracle'),
+    ('ADBE', 'Adobe Systems'),
+    ('QCOM', 'Qualcomm'),
+    ('NVDA', 'Nvidia'),
+    ('TXN', 'Texas Instruments'),
+    ('T', 'AT&T'),
+    ('BTC-USD', 'Bitcoin'),
+    ('ETH-USD', 'Ethereum'),
+    ('XRP-USD', 'Ripple'),
+    ('LTC-USD', 'Litecoin'),
+    ('BCH-USD', 'Bitcoin Cash'),
+    ('BRK-A', 'Berkshire Hathaway'),
+    ('IOC.NS', 'Indian Oil'),
+    ('RS', 'Reliance Steel'),
+    ('JNJ', 'Johnson & Johnson'),
+    ('VOD', 'Vodafone'),
+    ('CHL', 'China Mobile'),
+    ('HSBC', 'HSBC Holdings'),
+    ('BCS', 'Barclays PLC'),
+    ('ACN', 'Accenture PLC'),
+    ('KO', 'Coca-Cola'),
+    ('IBM', 'IBM'),
+    ('INTC', 'Intel'),
+    ('AXP', 'American Express'),
+    ('DIS', 'Disney'),
+    ('GS', 'Goldman Sachs'),
+    ('JPM', 'JPMorgan Chase'),
+    ('V', 'Visa'),
+    ('NKE', 'Nike'),
+    ('GE', 'General Electric'),
+    ('FDX', 'FedEx Corporation'),
+    ('SBUX', 'Starbucks'),
+    ('GC=F', 'Gold')
     ]
 
+
 class PortfolioForm(forms.Form):
-    start_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(1990,2030)), initial=datetime.date.today)
-    end_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(1990,2030)), initial=datetime.date.today)
+    start_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2010,2040)), initial=datetime.date.today)
+    end_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2010,2040)), initial=datetime.date.today)
     asset1 = forms.CharField(label='Asset 1 ', widget=forms.Select(choices=ASSET_CHOICES))
     weight1 = forms.FloatField(max_value=1, min_value=0)
     asset2 = forms.CharField(label='Asset 2 ', widget=forms.Select(choices=ASSET_CHOICES))
