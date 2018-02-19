@@ -3,7 +3,7 @@
 {% block title %}Results{% endblock %}
 
 {% block content %}
-<br><br>
+<br>
 <div class="intro">
     <p><a href="{% url 'home' %}">Home</a></p>
   <h2>Your optimized portfolio</h2>
@@ -11,7 +11,26 @@
     <p>{{ asset2 }} : {{ new_weights2 }}</p>
     <p>{{ asset3 }} : {{ new_weights3 }}</p>
     <p>{{ asset4 }} : {{ new_weights4 }}</p>
-    {% load static %}
-    <img src="{% static 'portimize\images\fig.jpg' %}"/>
+  <div id="myDiv"></div>
+<script>
+    var values1 = {{ return1_values | safe }}
+    var index1 = {{ return1_index | safe }}
+    var line1 = {
+        y: values1,
+        x: index1,
+        name: 'Previous Portfolio',
+        type: 'scatter',
+    };
+    var values2 = {{ return2_values | safe }}
+    var index2 = {{ return2_index | safe}}
+    var line2 = {
+        y: values2,
+        x: index2,
+        name: 'Optimized Portfolio',
+        type: 'scatter',
+    };
+    var data = [line1, line2];
+    Plotly.newPlot('myDiv', data);
+</script>
 </div>
 {% endblock %}

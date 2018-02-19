@@ -70,19 +70,27 @@ class Home(generic.TemplateView):
             return1 = portfolio_prices[attributes].mul(weights).sum(1)
             return2 = portfolio_prices[attributes].mul(new_weights).sum(1)
 
-            plt.plot(return1, color='red', label='Previous portfolio')
-            plt.plot(return2, color='blue', label='Optimized portfolio')
-            plt.legend(loc='upper left')
-            plt.savefig('portimize/static/portimize/images/fig.jpg')
-            plt.clf()
+            ts_list1 = return1.index.tolist()  # a list of Timestamp's
+            ts_list2 = return2.index.tolist()
 
+            date_list1 = [ts.date() for ts in ts_list1]  # a list of datetime.date's
+            date_list2 = [ts.date() for ts in ts_list2]
+
+            index1 = [str(date) for date in date_list1]  # a list of strings
+            index2 = [str(date) for date in date_list2]
+
+            
         args = {'form' : form, 'start_date' : start_date,
                 'end_date': end_date, 'asset1' : asset1,
                 'asset2' : asset2, 'asset3' : asset3,
                 'asset4' : asset4, 'new_weights1' : new_weights[0],
                 'new_weights2' : new_weights[1],
                 'new_weights3' : new_weights[2],
-                'new_weights4' : new_weights[3]}
+                'new_weights4' : new_weights[3],
+                'return1_values': return1.values.tolist(),
+                'return1_index' : index1,
+                'return2_values': return2.values.tolist(),
+                'return2_index': index2}
 
         return render(request, 'portimize/results.html', args)
 
