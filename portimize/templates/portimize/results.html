@@ -7,30 +7,29 @@
 <div class="intro">
     <p><a href="{% url 'home' %}">Home</a></p>
   <h2>Your optimized portfolio</h2>
-    <p>{{ asset1 }} : {{ new_weights1 }}</p>
-    <p>{{ asset2 }} : {{ new_weights2 }}</p>
-    <p>{{ asset3 }} : {{ new_weights3 }}</p>
-    <p>{{ asset4 }} : {{ new_weights4 }}</p>
-  <div id="myDiv"></div>
+    <p>{{ name1 }} : {{ new_weights1 }}</p>
+    <p>{{ name2 }} : {{ new_weights2 }}</p>
+    <p>{{ name3 }} : {{ new_weights3 }}</p>
+    <p>{{ name4 }} : {{ new_weights4 }}</p>
+  <div id="comparison"></div>
 <script>
-    var values1 = {{ return1_values | safe }}
-    var index1 = {{ return1_index | safe }}
+    var values1 = {{ values1 | safe }}
+    var index = {{ dates | safe }}
     var line1 = {
         y: values1,
-        x: index1,
+        x: index,
         name: 'Previous Portfolio',
         type: 'scatter',
     };
-    var values2 = {{ return2_values | safe }}
-    var index2 = {{ return2_index | safe}}
+    var values2 = {{ values2 | safe }}
     var line2 = {
         y: values2,
-        x: index2,
+        x: index,
         name: 'Optimized Portfolio',
         type: 'scatter',
     };
     var data = [line1, line2];
-    Plotly.newPlot('myDiv', data);
+    Plotly.newPlot('comparison', data);
 </script>
 </div>
 {% endblock %}

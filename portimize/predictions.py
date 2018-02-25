@@ -4,6 +4,7 @@ import keras
 import numpy as np
 import sklearn.preprocessing as prep
 
+
 def predict(portfolio_prices):
     portfolio_prices = portfolio_prices['Close']
     return portfolio_prices
@@ -14,10 +15,12 @@ def predict(portfolio_prices):
         portfolio_prices[i] = portfolio_prices[i].fillna(portfolio_prices[i].median())
     portfolio_prices = normalize(portfolio_prices)
     X_train, y_train, X_test, y_test = preprocess_data(portfolio_prices[:: -1], 22)
-    loaded_model = load_model('model.h5')
+    loaded_model =load_model ('model.h5')
     adam = keras.optimizers.Adam(decay=0.2)
     loaded_model.compile(loss='mse',optimizer=adam, metrics=['accuracy'])
     # tf.keras.backend.clear_session()
+    # tf.reset_default_graph()
+    # graph = tf.get_default_graph()
     graph = tf.get_default_graph()
     with graph.as_default():
         return loaded_model.predict(X_train)
@@ -30,6 +33,7 @@ def normalize(prices):
     prices['Low'] = min_max_scaler.fit_transform(prices.Low.values.reshape(-1, 1))
     prices['Adj Close'] = min_max_scaler.fit_transform(prices['Adj Close'].values.reshape(-1, 1))
     return prices
+
 
 def standard_scaler(X_train, X_test):
     train_samples, train_nx, train_ny = X_train.shape
@@ -46,6 +50,7 @@ def standard_scaler(X_train, X_test):
     X_test = X_test.reshape((test_samples, test_nx, test_ny))
 
     return X_train, X_test
+
 
 def preprocess_data(stock, seq_len):
     amount_of_features = len(stock.columns)
