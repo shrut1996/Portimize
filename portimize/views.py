@@ -7,6 +7,7 @@ import pandas as pd
 from optimization import MarkowitzOptimize
 from predictions import predict
 from datetime import timedelta
+from pandas.tseries.holiday import *
 
 
 class Home(generic.TemplateView):
@@ -21,13 +22,17 @@ class Home(generic.TemplateView):
         if form.is_valid():
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
-            # period = pd.date_range(start=start_date, end=end_date)
+            cal = USFederalHolidayCalendar()
+            period = pd.bdate_range(start_date, end_date).date
+            holidays = get_calendar('USFederalHolidayCalendar').holidays(start_date, end_date)
+            period = [x for x in period if x not in holidays.date]
+            period = pd.DatetimeIndex(period)
 
             #asset1
             asset1 = form.cleaned_data['asset1']
             name1 = dict(form.fields['asset1'].widget.choices)[asset1]
             weight1 = form.cleaned_data['weight1']
-            prices1 = web.DataReader(asset1, 'yahoo', start_date, end_date)
+            prices1 = web.DataReader(asset1, 'yahoo', start_date+timedelta(days=1), end_date)
             df1 = pd.DataFrame(predict(prices1))
             df1.rename(columns={df1.columns[0]: 'Close1'}, inplace = True)
 
@@ -35,7 +40,7 @@ class Home(generic.TemplateView):
             asset2 = form.cleaned_data['asset2']
             name2 = dict(form.fields['asset2'].widget.choices)[asset2]
             weight2 = form.cleaned_data['weight2']
-            prices2 = web.DataReader(asset2, 'yahoo', start_date, end_date)
+            prices2 = web.DataReader(asset2, 'yahoo', start_date+timedelta(days=1), end_date)
             df2 = pd.DataFrame(predict(prices2))
             df2.rename(columns={df2.columns[0]: 'Close2'}, inplace=True)
 
@@ -43,7 +48,7 @@ class Home(generic.TemplateView):
             asset3 = form.cleaned_data['asset3']
             name3 = dict(form.fields['asset3'].widget.choices)[asset3]
             weight3 = form.cleaned_data['weight3']
-            prices3 = web.DataReader(asset3, 'yahoo', start_date, end_date)
+            prices3 = web.DataReader(asset3, 'yahoo', start_date+timedelta(days=1), end_date)
             df3 = pd.DataFrame(predict(prices3))
             df3.rename(columns={df3.columns[0]: 'Close3'}, inplace=True)
 
@@ -51,7 +56,7 @@ class Home(generic.TemplateView):
             asset4 = form.cleaned_data['asset4']
             name4 = dict(form.fields['asset4'].widget.choices)[asset4]
             weight4 = form.cleaned_data['weight4']
-            prices4 = web.DataReader(asset4, 'yahoo', start_date, end_date)
+            prices4 = web.DataReader(asset4, 'yahoo', start_date+timedelta(days=1), end_date)
             df4 = pd.DataFrame(predict(prices4))
             df4.rename(columns={df4.columns[0]: 'Close4'}, inplace=True)
 
@@ -63,14 +68,11 @@ class Home(generic.TemplateView):
 
             new_weights = []
             portfolio= []
-            for i in range((end_date - start_date).days+1):
-                p1 = web.DataReader(asset1, 'yahoo', start_date + timedelta(days=i-50), start_date + timedelta(days=i))
-                p2 = web.DataReader(asset2, 'yahoo', start_date + timedelta(days=i - 50),
-                                         start_date + timedelta(days=i))
-                p3 = web.DataReader(asset3, 'yahoo', start_date + timedelta(days=i - 50),
-                                         start_date + timedelta(days=i))
-                p4 = web.DataReader(asset4, 'yahoo', start_date + timedelta(days=i - 50),
-                                         start_date + timedelta(days=i))
+            for i,j in zip(period, range(period.size+1)):
+                p1 = web.DataReader(asset1, 'yahoo', i+timedelta(days=-50), i)
+                p2 = web.DataReader(asset2, 'yahoo', i + timedelta(days=-50),i)
+                p3 = web.DataReader(asset3, 'yahoo', i + timedelta(days=-50),i)
+                p4 = web.DataReader(asset4, 'yahoo', i + timedelta(days=-50),i)
                 df1 = pd.DataFrame(p1['Close'])
                 df2 = pd.DataFrame(p2['Close'])
                 df3 = pd.DataFrame(p3['Close'])
@@ -80,13 +82,11 @@ class Home(generic.TemplateView):
                     .merge(pd.DataFrame(df4), left_index=True, right_index=True)
                 opti_model = MarkowitzOptimize(p_prices, weights)
                 new_weights.append(opti_model.minimizeSharpeRatio())
-                # print new_weights[i]
-                # print p_prices.iloc[i].values
-                portfolio.append(p_prices.iloc[i].values * new_weights[i])
+                portfolio.append(p_prices.iloc[j].values * new_weights[j])
 
             # opti_model = MarkowitzOptimize(portfolio_prices, weights)
             # new_weights = opti_model.minimizeSharpeRatio()
-            new_weights = new_weights[(end_date - start_date).days-1]
+            new_weights = new_weights[period.size-1]
 
             prices1 = pd.DataFrame(prices1['Close'])
             prices1.rename(columns={prices1.columns[0]: 'Close1'}, inplace = True)
@@ -104,18 +104,17 @@ class Home(generic.TemplateView):
             attributes = list(portfolio_prices.columns.values)
             return_prices = (portfolio_prices - portfolio_prices.iloc[0]) / portfolio_prices.iloc[0]
             return1 = return_prices[attributes].mul(weights).sum(1)
-            # print return1
+            print return1
 
             portfolio = pd.DataFrame(portfolio)
             attributes = list(portfolio.columns.values)
             portfolio = portfolio[attributes].sum(1)
             return2 = (portfolio - portfolio.iloc[0]) / portfolio.iloc[0]
-            # print return2
+            print return2
 
-            period = pd.date_range(start_date, end_date)
+
             ts_list = period.tolist()
-            date_list = [ts.date() for ts in ts_list]
-            date_string = [str(date) for date in date_list]
+            date_string = [str(date) for date in ts_list]
 
 
         args = {'form' : form, 'start_date' : start_date,
