@@ -5,25 +5,21 @@ import numpy as np
 import sklearn.preprocessing as prep
 
 
-def predict(portfolio_prices):
-    portfolio_prices = portfolio_prices['Close']
-    return portfolio_prices
-    portfolio_prices.drop(['Volume', 'Close'], 1, inplace=True)
-    portfolio_prices.astype(float)
-    # portfolio_prices = portfolio_prices.dropna(axis=0, how='any')
-    for i in portfolio_prices.columns:  # df.columns[w:] if you have w column of line description
-        portfolio_prices[i] = portfolio_prices[i].fillna(portfolio_prices[i].median())
-    portfolio_prices = normalize(portfolio_prices)
-    X_train, y_train, X_test, y_test = preprocess_data(portfolio_prices[:: -1], 22)
-    loaded_model =load_model ('model.h5')
-    adam = keras.optimizers.Adam(decay=0.2)
-    loaded_model.compile(loss='mse',optimizer=adam, metrics=['accuracy'])
-    # tf.keras.backend.clear_session()
-    # tf.reset_default_graph()
-    # graph = tf.get_default_graph()
-    graph = tf.get_default_graph()
-    with graph.as_default():
-        return loaded_model.predict(X_train)
+def predict(portfolio_prices, period):
+    portfolio_prices = portfolio_prices.iloc[:, 1:4].values.mean(axis=1)
+    portfolio_prices = np.reshape(portfolio_prices, (-1, 1))
+    sc = prep.MinMaxScaler()
+    portfolio_prices = sc.fit_transform(portfolio_prices)
+    portfolio_prices = np.reshape(portfolio_prices, (portfolio_prices.shape[0], 1, 1))
+    if period==6:
+        model_type='Models/5DayModel.h5'
+    elif period==13:
+        model_type = 'Models/10DayModel.h5'
+    else:
+        model_type = 'Models/15DayModel.h5'
+    model = load_model(model_type)
+    predicted_prices = model.predict(portfolio_prices)
+    return sc.inverse_transform(predicted_prices)
 
 
 def normalize(prices):

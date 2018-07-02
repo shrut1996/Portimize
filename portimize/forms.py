@@ -29,11 +29,6 @@ ASSET_CHOICES = [
     ('NVDA', 'Nvidia'),
     ('TXN', 'Texas Instruments'),
     ('T', 'AT&T'),
-    ('BTC-USD', 'Bitcoin'),
-    ('ETH-USD', 'Ethereum'),
-    ('XRP-USD', 'Ripple'),
-    ('LTC-USD', 'Litecoin'),
-    ('BCH-USD', 'Bitcoin Cash'),
     ('BRK-A', 'Berkshire Hathaway'),
     ('IOC.NS', 'Indian Oil'),
     ('RS', 'Reliance Steel'),
@@ -55,13 +50,20 @@ ASSET_CHOICES = [
     ('GE', 'General Electric'),
     ('FDX', 'FedEx Corporation'),
     ('SBUX', 'Starbucks'),
-    ('GC=F', 'Gold')
+    ('GC=F', 'Gold'),
     ]
+
+PERIOD_CHOICES = [
+    ('5', '5-day period'),
+    ('10', '10-day period'),
+    ('15', '15-day period'),
+]
 
 
 class PortfolioForm(forms.Form):
-    start_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2010,2040)), initial=datetime.date.today)
-    end_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2010,2040)), initial=datetime.date.today)
+    #start_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2010,2040)), initial=datetime.date.today)
+    #end_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2010,2040)), initial=datetime.date.today)
+    holding = forms.IntegerField(label='Holding Period ', widget=forms.Select(choices=PERIOD_CHOICES))
     asset1 = forms.CharField(label='Asset 1 ', widget=forms.Select(choices=ASSET_CHOICES))
     weight1 = forms.FloatField(max_value=1, min_value=0)
     asset2 = forms.CharField(label='Asset 2 ', widget=forms.Select(choices=ASSET_CHOICES))
