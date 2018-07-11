@@ -1,6 +1,8 @@
-from keras.models import load_model
 import tensorflow as tf
 import keras
+
+from keras import backend as K
+from keras.models import load_model
 import numpy as np
 import sklearn.preprocessing as prep
 
@@ -12,13 +14,14 @@ def predict(portfolio_prices, period):
     portfolio_prices = sc.fit_transform(portfolio_prices)
     portfolio_prices = np.reshape(portfolio_prices, (portfolio_prices.shape[0], 1, 1))
     if period==6:
-        model_type='Models/5DayModel.h5'
+        model_type='models/5DayModel.h5'
     elif period==13:
-        model_type = 'Models/10DayModel.h5'
+        model_type = 'models/10DayModel.h5'
     else:
-        model_type = 'Models/15DayModel.h5'
+        model_type = 'models/15DayModel.h5'
     model = load_model(model_type)
     predicted_prices = model.predict(portfolio_prices)
+    K.clear_session()
     return sc.inverse_transform(predicted_prices)
 
 

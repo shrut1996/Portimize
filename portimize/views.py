@@ -2,12 +2,11 @@ from django.views import generic
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from forms import SignUpForm, PortfolioForm
-import pandas_datareader.data as web
+
 import pandas as pd
+import pandas_datareader.data as web
 from optimization import MarkowitzOptimize
 from predictions import predict
-
-from datetime import timedelta
 from pandas.tseries.holiday import *
 
 
@@ -22,56 +21,80 @@ class Home(generic.TemplateView):
         form = PortfolioForm(request.POST)
         if form.is_valid():
             holding = form.cleaned_data['holding']
-            if holding == '5':
+            if holding == 5:
                 span = 6
-            elif holding == '10':
+            elif holding == 10:
                 span = 13
-            else :
+            elif holding == 15:
                 span = 21
-
-            start_date = datetime.today()+timedelta(days=-span)
-            end_date = datetime.today()
-            period = pd.bdate_range(start_date, end_date).date
-            #holidays = get_calendar('USFederalHolidayCalendar').holidays(start_date, end_date)
-            #period = [x for x in period if x not in holidays.date]
-            #period = pd.DatetimeIndex(period)
-
+            else:
+                span = 'NA'
 
             #asset1
             asset1 = form.cleaned_data['asset1']
             name1 = dict(form.fields['asset1'].widget.choices)[asset1]
             weight1 = form.cleaned_data['weight1']
-            prices1 = web.DataReader(asset1, 'yahoo', start_date, end_date)
-            df1 = pd.DataFrame(predict(prices1, span))
-            df1.rename(columns={df1.columns[0]: 'Close1'}, inplace = True)
 
-            #asset2
+            # asset2
             asset2 = form.cleaned_data['asset2']
             name2 = dict(form.fields['asset2'].widget.choices)[asset2]
             weight2 = form.cleaned_data['weight2']
-            prices2 = web.DataReader(asset2, 'yahoo', start_date, end_date)
-            df2 = pd.DataFrame(predict(prices2, span))
-            df2.rename(columns={df2.columns[0]: 'Close2'}, inplace=True)
 
-            #asset3
+            # asset3
             asset3 = form.cleaned_data['asset3']
             name3 = dict(form.fields['asset3'].widget.choices)[asset3]
             weight3 = form.cleaned_data['weight3']
-            prices3 = web.DataReader(asset3, 'yahoo', start_date, end_date)
-            df3 = pd.DataFrame(predict(prices3, span))
-            df3.rename(columns={df3.columns[0]: 'Close3'}, inplace=True)
 
-            #asset4
+            # asset4
             asset4 = form.cleaned_data['asset4']
             name4 = dict(form.fields['asset4'].widget.choices)[asset4]
             weight4 = form.cleaned_data['weight4']
-            prices4 = web.DataReader(asset4, 'yahoo', start_date, end_date)
-            df4 = pd.DataFrame(predict(prices4, span))
-            df4.rename(columns={df4.columns[0]: 'Close4'}, inplace=True)
 
-            portfolio_prices = df1.merge(pd.DataFrame(df2), left_index=True, right_index=True) \
-                .merge(pd.DataFrame(df3), left_index=True, right_index=True) \
-                .merge(pd.DataFrame(df4), left_index=True, right_index=True)
+            # Short-term holding
+            if span != 'NA':
+                start_date = datetime.today()+timedelta(days=-span)
+                end_date = datetime.today()
+                #holidays = get_calendar('USFederalHolidayCalendar').holidays(start_date, end_date)
+                #period = [x for x in period if x not in holidays.date]
+                #period = pd.DatetimeIndex(period)
+
+                prices1 = web.DataReader(asset1, 'yahoo', start_date, end_date)
+                df1 = pd.DataFrame(predict(prices1, span))
+                df1.rename(columns={df1.columns[0]: 'Close1'}, inplace=True)
+
+                prices2 = web.DataReader(asset2, 'yahoo', start_date, end_date)
+                df2 = pd.DataFrame(predict(prices2, span))
+                df2.rename(columns={df2.columns[0]: 'Close2'}, inplace=True)
+
+                prices3 = web.DataReader(asset3, 'yahoo', start_date, end_date)
+                df3 = pd.DataFrame(predict(prices3, span))
+                df3.rename(columns={df3.columns[0]: 'Close3'}, inplace=True)
+
+                prices4 = web.DataReader(asset4, 'yahoo', start_date, end_date)
+                df4 = pd.DataFrame(predict(prices4, span))
+                df4.rename(columns={df4.columns[0]: 'Close4'}, inplace=True)
+
+
+            #Long-term Holding
+            else:
+                start_date = form.cleaned_data['start_date']
+                end_date = form.cleaned_data['end_date']
+                df1 = web.DataReader(asset1, 'yahoo', start_date, end_date)
+                df2 = web.DataReader(asset2, 'yahoo', start_date, end_date)
+                df3 = web.DataReader(asset3, 'yahoo', start_date, end_date)
+                df4 = web.DataReader(asset4, 'yahoo', start_date, end_date)
+
+                df1 = pd.DataFrame({'Close1': df1['Close']})
+                df2 = pd.DataFrame({'Close2': df2['Close']})
+                df3 = pd.DataFrame({'Close3': df3['Close']})
+                df4 = pd.DataFrame({'Close4': df4['Close']})
+
+
+            portfolio_prices = df1.merge(df2, left_index=True, right_index=True) \
+                .merge(df3, left_index=True, right_index=True) \
+                .merge(df4, left_index=True, right_index=True)
+
+            period = pd.bdate_range(start_date, end_date).date
 
             weights = []
             weights.append(weight1)
@@ -101,31 +124,15 @@ class Home(generic.TemplateView):
 
             opti_model = MarkowitzOptimize(portfolio_prices, weights)
             new_weights = opti_model.minimizeSharpeRatio()
-            #new_weights = new_weights[period.size-1]
-
-            #prices1 = pd.DataFrame(prices1['Close'])
-            #prices1.rename(columns={prices1.columns[0]: 'Close1'}, inplace = True)
-            #prices2 = pd.DataFrame(prices2['Close'])
-            #prices2.rename(columns={prices2.columns[0]: 'Close2'}, inplace = True)
-            #prices3 = pd.DataFrame(prices3['Close'])
-            #prices3.rename(columns={prices3.columns[0]: 'Close3'}, inplace = True)
-            #prices4 = pd.DataFrame(prices4['Close'])
-            #prices4.rename(columns={prices4.columns[0]: 'Close4'}, inplace = True)
-
-            #portfolio_prices = prices1.merge(prices2, left_index=True, right_index=True) \
-            #    .merge(prices3, left_index=True, right_index=True) \
-            #    .merge(prices4, left_index=True, right_index=True)
 
             attributes = list(portfolio_prices.columns.values)
             return_prices = portfolio_prices / portfolio_prices.iloc[0]
             return1 = return_prices[attributes].mul(weights).sum(1)
-            #print return1
 
             portfolio = pd.DataFrame(portfolio_prices)
             attributes = list(portfolio.columns.values)
             portfolio = portfolio[attributes].sum(1)
             return2 = portfolio / portfolio.iloc[0]
-            #print return2
 
 
             ts_list = period.tolist()

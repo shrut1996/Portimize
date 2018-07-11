@@ -57,13 +57,14 @@ PERIOD_CHOICES = [
     ('5', '5-day period'),
     ('10', '10-day period'),
     ('15', '15-day period'),
+    ('0', 'Long-term Holding')
 ]
 
 
 class PortfolioForm(forms.Form):
-    #start_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2010,2040)), initial=datetime.date.today)
-    #end_date = forms.DateField(widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2010,2040)), initial=datetime.date.today)
     holding = forms.IntegerField(label='Holding Period ', widget=forms.Select(choices=PERIOD_CHOICES))
+    start_date = forms.DateField(help_text="Only required for Long-term Holding", widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2008,2019)), initial=datetime.date.today)
+    end_date = forms.DateField(help_text="Only required for Long-term Holding", widget=SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), years=range(2008,2019)), initial=datetime.date.today)
     asset1 = forms.CharField(label='Asset 1 ', widget=forms.Select(choices=ASSET_CHOICES))
     weight1 = forms.FloatField(max_value=1, min_value=0)
     asset2 = forms.CharField(label='Asset 2 ', widget=forms.Select(choices=ASSET_CHOICES))
