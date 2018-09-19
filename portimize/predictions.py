@@ -1,6 +1,3 @@
-import tensorflow as tf
-import keras
-
 from keras import backend as K
 from keras.models import load_model
 import numpy as np
@@ -9,29 +6,21 @@ import sklearn.preprocessing as prep
 
 def predict(portfolio_prices, period):
     portfolio_prices = portfolio_prices.iloc[:, 1:4].values.mean(axis=1)
-    portfolio_prices = np.reshape(portfolio_prices, (-1, 1))
     sc = prep.MinMaxScaler()
-    portfolio_prices = sc.fit_transform(portfolio_prices)
-    portfolio_prices = np.reshape(portfolio_prices, (portfolio_prices.shape[0], 1, 1))
-    if period==6:
-        model_type='models/5DayModel.h5'
-    elif period==13:
-        model_type = 'models/10DayModel.h5'
+    portfolio_prices = sc.fit_transform(portfolio_prices[-30:])
+    portfolio_prices = np.reshape(portfolio_prices, (1, 1, portfolio_prices.shape[0]))
+    if period==2:
+        model_type='models/2DayForecast.h5'
+    elif period==5:
+        model_type = 'models/5DayForecast.h5'
     else:
-        model_type = 'models/15DayModel.h5'
+        model_type = 'models/10DayForecast.h5'
     model = load_model(model_type)
     predicted_prices = model.predict(portfolio_prices)
+    predicted_prices = sc.inverse_transform(predicted_prices)
+    predicted_prices = np.reshape(predicted_prices, (predicted_prices.shape[1], 1))
     K.clear_session()
-    return sc.inverse_transform(predicted_prices)
-
-
-def normalize(prices):
-    min_max_scaler = prep.MinMaxScaler()
-    prices['Open'] = min_max_scaler.fit_transform(prices.Open.values.reshape(-1, 1))
-    prices['High'] = min_max_scaler.fit_transform(prices.High.values.reshape(-1, 1))
-    prices['Low'] = min_max_scaler.fit_transform(prices.Low.values.reshape(-1, 1))
-    prices['Adj Close'] = min_max_scaler.fit_transform(prices['Adj Close'].values.reshape(-1, 1))
-    return prices
+    return predicted_prices
 
 
 def standard_scaler(X_train, X_test):
@@ -51,7 +40,7 @@ def standard_scaler(X_train, X_test):
     return X_train, X_test
 
 
-def preprocess_data(stock, seq_len):
+def train_test_split(stock, seq_len):
     amount_of_features = len(stock.columns)
     data = stock.as_matrix()
 

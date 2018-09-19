@@ -54,9 +54,9 @@ ASSET_CHOICES = [
     ]
 
 PERIOD_CHOICES = [
+    ('2', '2-day period'),
     ('5', '5-day period'),
     ('10', '10-day period'),
-    ('15', '15-day period'),
     ('0', 'Long-term Holding')
 ]
 
